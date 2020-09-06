@@ -40,10 +40,10 @@ namespace WebCore.Controllers
                     Email = item.Email,
                     UserName = item.UserName,
                     VerifyCode = item.NormalizedEmail,
-                //Password = item.PasswordHash,
-                //Phone = item.PhoneNumber,
-                RoleName = role2.Name
-                    
+                    //Password = item.PasswordHash,
+                    //Phone = item.PhoneNumber,
+                    RoleName = role2.Name
+
                 };
                 list.Add(user);
             }
@@ -54,7 +54,7 @@ namespace WebCore.Controllers
         [HttpGet("{id}")]
         public UserViewModel GetID(string id)
         {
-            
+
             var getId = myContext.Users.Find(id);
             var role = myContext.RoleUsers.Where(r => r.User.Id == getId.Id).FirstOrDefault();
             var role2 = myContext.Roles.Where(s => s.Id == role.RoleId).FirstOrDefault();
@@ -74,14 +74,14 @@ namespace WebCore.Controllers
         public IActionResult Create(UserViewModel userVM)
         {
             var random = new Random();
-            var randomcode = random.Next();
+            var randomcode = random.Next(1, 10000).ToString("D4");
 
 
             MailMessage message = new MailMessage();
             message.From = new MailAddress("putri.baru1997@gmail.com");
             message.To.Add(userVM.Email);
             message.Subject = "Verification code";
-            message.Body = "Your Random Code is " + randomcode;
+            message.Body = "Your Verify Code is " + randomcode;
 
             SmtpClient smptc = new SmtpClient();
             smptc.Host = "smtp.gmail.com";
@@ -94,7 +94,7 @@ namespace WebCore.Controllers
             smptc.EnableSsl = true;
             smptc.Send(message);
 
-            
+
 
             userVM.RoleName = "Sales";
             var user = new User();
@@ -159,7 +159,7 @@ namespace WebCore.Controllers
                 this.Create(userVM);
                 return Ok("Successfully Created");
             }
-            return BadRequest();
+            return BadRequest("Registration Failed");
         }
         [HttpPost]
         [Route("login")]
@@ -211,7 +211,7 @@ namespace WebCore.Controllers
                 }
                 else
                 {
-                    
+
                     return StatusCode(200, new
                     {
                         Username = getUserRole.User.UserName,
@@ -224,5 +224,5 @@ namespace WebCore.Controllers
         }
 
     }
-    
+
 }

@@ -34,11 +34,24 @@ namespace WebCore.Controllers
         [HttpPost]
         public IActionResult Create(Role role)
         {
-            var roles = new Role();
-            roles.Name = role.Name;
-            myContext.Roles.AddAsync(role);
-            myContext.SaveChanges();
-            return Ok("Role Successfully Created");
+            if (ModelState.IsValid)
+            {
+                if (role.Name.Equals(""))
+                {
+                    return BadRequest("Name Can Not Empty");
+                }
+                else
+                {
+                    var roles = new Role();
+                    roles.Name = role.Name;
+                    roles.NormalizedName = "false";
+                    roles.ConcurrencyStamp = "false";
+                    myContext.Roles.AddAsync(role);
+                    myContext.SaveChanges();
+                    return Ok("Role Successfully Created");
+                }
+            }
+            return BadRequest("Role Can Not Created");
 
         }
 
